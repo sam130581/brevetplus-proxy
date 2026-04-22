@@ -12,8 +12,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Paramètres manquants' });
   }
 
-  const prompt = `Tu es un prof de collège qui prépare un élève de 3e au brevet.
-Génère un QCM sur le sujet : "${topic}" (matière : ${subject}).
+  const prompt = `Génère un QCM sur le sujet : "${topic}" (matière : ${subject}) pour un élève de 3e qui prépare le brevet.
 Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks :
 {
   "question": "La question, courte et claire (max 20 mots)",
@@ -24,20 +23,18 @@ Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks :
 Règles : langage très simple niveau 3e, une seule bonne réponse (answer = index 0-3).`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        max_tokens: 300,
-        temperature: 0.8,
-        messages: [
-          { role: 'system', content: 'Tu es un assistant pédagogique. Réponds TOUJOURS uniquement en JSON valide, sans aucun markdown.' },
-          { role: 'user', content: prompt }
-        ]
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        system: 'Tu es un assistant pédagogique. Réponds TOUJOURS uniquement en JSON valide, sans aucun markdown, sans backticks, sans texte avant ou après.',
+        messages: [{ role: 'user', content: prompt }]
       })
     });
 
@@ -45,7 +42,7 @@ Règles : langage très simple niveau 3e, une seule bonne réponse (answer = ind
 
     if (data.error) throw new Error(data.error.message);
 
-    const raw = data.choices[0].message.content.trim();
+    const raw = data.content.map(x => x.text || '').join('').trim();
     const clean = raw.replace(/```json|```/g, '').trim();
     const quiz = JSON.parse(clean);
 

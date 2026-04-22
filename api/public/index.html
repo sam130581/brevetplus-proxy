@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Brevet+">
+<title>Brevet+</title>
+<style>
+  :root {
+    --purple: #534AB7; --purple-light: #EEEDFE; --purple-dark: #3C3489;
+    --teal: #0F6E56; --teal-light: #E1F5EE;
+    --amber: #854F0B; --amber-light: #FAEEDA;
+    --green: #3B6D11; --green-light: #EAF3DE;
+    --blue: #185FA5; --blue-light: #E6F1FB;
+    --coral: #993C1D; --coral-light: #FAECE7;
+    --red-light: #FCEBEB; --red: #A32D2D;
+    --bg: #ffffff; --bg2: #f7f7f5; --bg3: #f0efe9;
+    --text: #1a1a1a; --text2: #666; --text3: #999;
+    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+    --radius: 12px; --radius-lg: 16px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, 'SF Pro Text', sans-serif; background: var(--bg3); color: var(--text); overflow-x: hidden; }
+
+  .app { max-width: 430px; margin: 0 auto; background: var(--bg3); min-height: 100vh; position: relative; }
+
+  /* HEADER */
+  .hdr {
+    background: var(--bg);
+    padding: 52px 16px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 20;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .logo { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+  .logo span { color: var(--purple); }
+  .hdr-right { display: flex; align-items: center; gap: 10px; }
+  .streak { font-size: 14px; font-weight: 600; color: #BA7517; }
+  .xpbadge { font-size: 14px; font-weight: 600; color: var(--purple); }
+
+  /* SCREENS */
+  .scr { display: none; padding: 0 12px; padding-bottom: calc(80px + var(--safe-bottom)); }
+  .scr.on { display: block; }
+
+  /* HOME */
+  .welcome {
+    margin: 14px 0 12px;
+    background: var(--purple-light);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    border: 0.5px solid #AFA9EC;
+  }
+  .welcome h2 { font-size: 20px; font-weight: 700; color: var(--purple-dark); margin-bottom: 3px; }
+  .welcome p { font-size: 13px; color: var(--purple); }
+
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); margin: 14px 0 8px; text-transform: uppercase; letter-spacing: .06em; }
+
+  .subj-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .scard { border-radius: var(--radius-lg); padding: 14px 12px; cursor: pointer; transition: transform .13s; border: 0.5px solid transparent; -webkit-user-select: none; }
+  .scard:active { transform: scale(.96); }
+  .scard .si { font-size: 28px; display: block; margin-bottom: 7px; }
+  .scard .sn { font-size: 14px; font-weight: 700; }
+  .scard .sp { font-size: 11px; margin-top: 2px; opacity: .75; }
+  .scard .bar { height: 3px; border-radius: 2px; background: rgba(0,0,0,.1); margin-top: 9px; }
+  .scard .barf { height: 3px; border-radius: 2px; background: rgba(0,0,0,.25); }
+
+  .sc-m { background: #EEEDFE; border-color: #AFA9EC; } .sc-m .sn { color: #3C3489; } .sc-m .sp { color: #534AB7; }
+  .sc-f { background: #E1F5EE; border-color: #5DCAA5; } .sc-f .sn { color: #085041; } .sc-f .sp { color: #0F6E56; }
+  .sc-h { background: #FAEEDA; border-color: #FAC775; } .sc-h .sn { color: #412402; } .sc-h .sp { color: #854F0B; }
+  .sc-s { background: #EAF3DE; border-color: #97C459; } .sc-s .sn { color: #173404; } .sc-s .sp { color: #3B6D11; }
+  .sc-p { background: #E6F1FB; border-color: #85B7EB; } .sc-p .sn { color: #042C53; } .sc-p .sp { color: #185FA5; }
+  .sc-g { background: #FAECE7; border-color: #F0997B; } .sc-g .sn { color: #4A1B0C; } .sc-g .sp { color: #993C1D; }
+
+  .mission-box { margin-top: 12px; padding: 13px 14px; border-radius: var(--radius); background: var(--bg); border: 0.5px solid var(--border); }
+  .mission-box .mt { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .mission-box .mb { font-size: 13px; color: var(--text2); }
+
+  /* MATIERE */
+  .back { display: flex; align-items: center; gap: 5px; font-size: 15px; color: var(--purple); cursor: pointer; padding: 12px 0; font-weight: 500; }
+  .mhdr { border-radius: var(--radius-lg); padding: 16px; margin-bottom: 14px; }
+  .mhdr h2 { font-size: 22px; font-weight: 700; }
+  .mhdr p { font-size: 13px; opacity: .8; margin-top: 3px; }
+
+  .modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .mbtn { border-radius: var(--radius); padding: 12px 8px; text-align: center; cursor: pointer; border: 0.5px solid var(--border); background: var(--bg); transition: transform .13s; -webkit-user-select: none; }
+  .mbtn:active { transform: scale(.96); }
+  .mbtn .mi { font-size: 22px; display: block; margin-bottom: 5px; }
+  .mbtn .ml { font-size: 12px; font-weight: 600; color: var(--text); }
+  .mbtn .ms { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .mbtn.on { border-color: var(--purple); background: var(--purple-light); }
+  .mbtn.on .ml { color: var(--purple-dark); }
+
+  /* SYNOPTIQUE */
+  .synop-sec { background: var(--bg); border-radius: var(--radius); padding: 13px; margin-bottom: 9px; border: 0.5px solid var(--border); }
+  .synop-sec h3 { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 9px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { padding: 5px 11px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: transform .1s; -webkit-user-select: none; }
+  .tag:active { transform: scale(.94); }
+  .tp { background: #EEEDFE; color: #3C3489; }
+  .tt { background: #E1F5EE; color: #085041; }
+  .ta { background: #FAEEDA; color: #412402; }
+  .tb { background: #E6F1FB; color: #042C53; }
+  .tg { background: #EAF3DE; color: #173404; }
+  .tc { background: #FAECE7; color: #4A1B0C; }
+
+  /* FLASHCARD */
+  .fc-wrap { perspective: 900px; margin-bottom: 16px; }
+  .fc { width: 100%; min-height: 200px; border-radius: var(--radius-lg); cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform .45s; border: 0.5px solid var(--border); -webkit-user-select: none; }
+  .fc.flip { transform: rotateY(180deg); }
+  .face { position: absolute; width: 100%; min-height: 200px; border-radius: var(--radius-lg); backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 22px; text-align: center; }
+  .ffront { background: var(--bg); }
+  .fback { background: var(--purple-light); transform: rotateY(180deg); }
+  .face .fem { font-size: 36px; margin-bottom: 10px; }
+  .face .fq { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .face .fa { font-size: 15px; color: var(--purple-dark); line-height: 1.6; white-space: pre-line; }
+  .face .fh { font-size: 12px; color: var(--text3); margin-top: 14px; }
+  .cnav { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
+  .nbtn { border: 0.5px solid var(--border2); background: var(--bg); border-radius: 10px; padding: 8px 20px; font-size: 14px; cursor: pointer; color: var(--text); font-family: inherit; }
+  .nbtn:active { background: var(--bg2); }
+  .ctr { font-size: 13px; color: var(--text3); min-width: 55px; text-align: center; }
+
+  /* QUIZ IA */
+  .ai-box { background: var(--bg); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px; border: 0.5px solid var(--border); }
+  .ai-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+  .topic-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .topic-chip { padding: 7px 13px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 0.5px solid var(--border2); background: var(--bg2); color: var(--text); transition: all .13s; -webkit-user-select: none; }
+  .topic-chip:active { transform: scale(.95); }
+  .topic-chip.sel { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .gen-btn { width: 100%; padding: 13px; border-radius: var(--radius); background: var(--purple); color: #fff; font-size: 15px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; transition: opacity .2s; }
+  .gen-btn:disabled { opacity: .4; }
+  .gen-btn:active:not(:disabled) { opacity: .85; }
+
+  .loading-dots { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 36px 0; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--purple); animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: .2s; }
+  .dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-10px); } }
+
+  .quiz-area { padding: 2px 0; }
+  .qq { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.4; }
+  .qopts { display: flex; flex-direction: column; gap: 8px; }
+  .qopt { border: 0.5px solid var(--border2); background: var(--bg); border-radius: var(--radius); padding: 14px 15px; font-size: 14px; cursor: pointer; text-align: left; color: var(--text); font-family: inherit; transition: all .13s; -webkit-user-select: none; }
+  .qopt:active { background: var(--bg2); }
+  .qopt.ok { background: #EAF3DE; border-color: #639922; color: #173404; }
+  .qopt.ko { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  .qfb { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius); font-size: 14px; line-height: 1.5; }
+  .qfb.qok { background: #EAF3DE; color: #173404; }
+  .qfb.qko { background: #FCEBEB; color: #501313; }
+  .qnext { margin-top: 10px; width: 100%; padding: 13px; border-radius: var(--radius); border: 0.5px solid var(--purple); background: var(--purple-light); color: var(--purple-dark); font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .qnext:active { opacity: .8; }
+
+  .err-box { background: #FCEBEB; border: 0.5px solid #F09595; border-radius: var(--radius); padding: 14px; font-size: 13px; color: #501313; margin-top: 12px; line-height: 1.5; }
+
+  /* PROGRESS */
+  .prog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin-top: 10px; }
+  .pc { background: var(--bg); border-radius: var(--radius); padding: 14px; border: 0.5px solid var(--border); }
+  .pc .pl { font-size: 12px; color: var(--text3); font-weight: 500; }
+  .pc .pv { font-size: 26px; font-weight: 700; color: var(--text); margin-top: 4px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .bdg { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+  /* XP TOAST */
+  .xp-toast { position: fixed; bottom: calc(75px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); background: var(--purple-dark); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
+  .xp-toast.show { opacity: 1; }
+
+  /* BOTTOM NAV */
+  .bnav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: var(--bg); border-top: 0.5px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; padding-bottom: calc(8px + var(--safe-bottom)); z-index: 20; }
+  .ni { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 20px; border-radius: 10px; -webkit-user-select: none; }
+  .ni .nic { font-size: 22px; }
+  .ni .nil { font-size: 10px; font-weight: 500; color: var(--text3); }
+  .ni.on .nil { color: var(--purple); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="logo">Brevet<span>+</span></div>
+    <div class="hdr-right">
+      <span class="streak">🔥 <span id="sv">3</span></span>
+      <span class="xpbadge">✦ <span id="xv">240</span> XP</span>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="scr on" id="s-home">
+    <div class="welcome">
+      <h2>Salut Elyes ! 👋</h2>
+      <p>Jour 4 — Tu assures. Choisis une matière.</p>
+    </div>
+    <div class="section-label">Matières</div>
+    <div class="subj-grid">
+      <div class="scard sc-m" onclick="openM('math')"><span class="si">📐</span><div class="sn">Maths</div><div class="sp">Géométrie · Algèbre · Stats</div><div class="bar"><div class="barf" style="width:45%"></div></div></div>
+      <div class="scard sc-f" onclick="openM('fr')"><span class="si">📖</span><div class="sn">Français</div><div class="sp">Lecture · Grammaire · Écriture</div><div class="bar"><div class="barf" style="width:30%"></div></div></div>
+      <div class="scard sc-h" onclick="openM('hist')"><span class="si">🏛️</span><div class="sn">Histoire</div><div class="sp">XXe siècle · Monde actuel</div><div class="bar"><div class="barf" style="width:60%"></div></div></div>
+      <div class="scard sc-s" onclick="openM('svt')"><span class="si">🧬</span><div class="sn">SVT</div><div class="sp">Corps · Génétique · Écologie</div><div class="bar"><div class="barf" style="width:20%"></div></div></div>
+      <div class="scard sc-p" onclick="openM('phys')"><span class="si">⚗️</span><div class="sn">Physique-Chimie</div><div class="sp">Électricité · Atomes · Optique</div><div class="bar"><div class="barf" style="width:35%"></div></div></div>
+      <div class="scard sc-g" onclick="openM('geo')"><span class="si">🌍</span><div class="sn">Géographie</div><div class="sp">Mondialisation · Villes · Climat</div><div class="bar"><div class="barf" style="width:50%"></div></div></div>
+    </div>
+    <div class="mission-box">
+      <div class="mt">Mission du jour ⚡</div>
+      <div class="mb">Fais 3 quiz IA en Histoire → <strong>+80 XP</strong></div>
+    </div>
+  </div>
+
+  <!-- MATIERE -->
+  <div class="scr" id="s-matiere">
+    <div class="back" onclick="goHome()">← Retour</div>
+    <div id="mhdr" class="mhdr"></div>
+    <div class="modes">
+      <div class="mbtn on" id="mb-synop" onclick="setMode('synop')"><span class="mi">🗺️</span><div class="ml">Vue rapide</div><div class="ms">Carte mentale</div></div>
+      <div class="mbtn" id="mb-flash" onclick="setMode('flash')"><span class="mi">⚡</span><div class="ml">Flashcards</div><div class="ms">Mémo rapide</div></div>
+      <div class="mbtn" id="mb-quiz" onclick="setMode('quiz')"><span class="mi">🎯</span><div class="ml">Quiz IA</div><div class="ms">Infini ✨</div></div>
+    </div>
+    <div id="mcontent"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="scr" id="s-prog">
+    <div style="padding:14px 0 8px;font-size:20px;font-weight:700;color:var(--text)">Tes progrès</div>
+    <div class="prog-grid">
+      <div class="pc"><div class="pl">Total XP</div><div class="pv" id="xp-r">240</div></div>
+      <div class="pc"><div class="pl">Série 🔥</div><div class="pv">3 jours</div></div>
+      <div class="pc"><div class="pl">Quiz IA faits</div><div class="pv" id="qa-r">7</div></div>
+      <div class="pc"><div class="pl">Flashcards vues</div><div class="pv" id="fc-r">24</div></div>
+    </div>
+    <div style="margin-top:16px;font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px">Badges :</div>
+    <div class="badges">
+      <div class="bdg" style="background:#EEEDFE;color:#3C3489">🔥 3 jours de suite</div>
+      <div class="bdg" style="background:#EAF3DE;color:#173404">🧬 SVT débloqué</div>
+      <div class="bdg" style="background:#E6F1FB;color:#042C53">🤖 Premier quiz IA</div>
+    </div>
+  </div>
+
+  <div class="xp-toast" id="toast"></div>
+
+  <div class="bnav">
+    <div class="ni on" id="n-home" onclick="switchNav('home')"><div class="nic">🏠</div><div class="nil">Accueil</div></div>
+    <div class="ni" id="n-prog" onclick="switchNav('prog')"><div class="nic">📊</div><div class="nil">Progrès</div></div>
+    <div class="ni" id="n-ai" onclick="launchAI()"><div class="nic">🤖</div><div class="nil">Quiz IA</div></div>
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://brevetplus-proxy.vercel.app/api/quiz';
+
+let xp=240, qaDone=7, fcDone=24, curM='hist', curMode='synop', fcIdx=0, fcFlipped=false;
+let aiQuiz=null, aiTopic='', aiMatiere='';
+
+const DATA = {
+  math: {
+    name:'Maths', icon:'📐', bg:'#EEEDFE', col:'#3C3489', brd:'#AFA9EC',
+    synop:[
+      {title:'📐 Géométrie', clr:'tp', tags:['Théorème de Pythagore','Théorème de Thalès','Trigonométrie','Aires & volumes','Transformations géométriques']},
+      {title:'🔢 Algèbre', clr:'tb', tags:['Équations du 1er degré','Systèmes d\'équations','Développer / Factoriser','Fonctions linéaires & affines']},
+      {title:'📊 Stats & Probabilités', clr:'tt', tags:['Moyenne','Médiane','Diagrammes','Probabilités','Échantillonnage']}
+    ],
+    flashcards:[
+      {q:'Théorème de Pythagore ?', a:'Dans un triangle rectangle :\nc² = a² + b²\n(c = hypoténuse)', em:'📐'},
+      {q:'Développer (a+b)² ?', a:'a² + 2ab + b²\nEx : (x+3)² = x² + 6x + 9', em:'🔢'},
+      {q:'Volume d\'une sphère ?', a:'V = (4/3) × π × r³', em:'⚽'},
+      {q:'Fonction affine ?', a:'f(x) = ax + b\na = pente\nb = ordonnée à l\'origine', em:'📈'}
+    ]
+  },
+  fr: {
+    name:'Français', icon:'📖', bg:'#E1F5EE', col:'#085041', brd:'#5DCAA5',
+    synop:[
+      {title:'📚 Figures de style', clr:'tt', tags:['Métaphore','Comparaison','Hyperbole','Personnification','Narrateur & point de vue']},
+      {title:'✏️ Grammaire', clr:'tb', tags:['Subordonnées','Pronoms relatifs','Temps du passé','Accord du participe','Voix passive']},
+      {title:'📝 Écriture', clr:'tp', tags:['Rédaction','Argumentation','Dictée','Résumé']}
+    ],
+    flashcards:[
+      {q:'Qu\'est-ce qu\'une métaphore ?', a:'Comparaison SANS "comme".\nEx : "La vie est un long fleuve tranquille"', em:'🌊'},
+      {q:'Qu\'est-ce qu\'une hyperbole ?', a:'Exagération pour insister.\nEx : "Je t\'ai dit mille fois !"', em:'💥'},
+      {q:'Voix passive, exemple ?', a:'Actif : Le chat mange la souris.\nPassif : La souris est mangée par le chat.', em:'🐱'}
+    ]
+  },
+  hist: {
+    name:'Histoire', icon:'🏛️', bg:'#FAEEDA', col:'#412402', brd:'#FAC775',
+    synop:[
+      {title:'🌍 1ère Guerre mondiale', clr:'ta', tags:['Causes du conflit','Guerre de tranchées','Génocide arménien','Traité de Versailles','Bilan humain']},
+      {title:'⚡ 2ème Guerre mondiale', clr:'tc', tags:['Montée du nazisme','Occupation en France','Résistance','Shoah','Libération']},
+      {title:'🌐 Le monde depuis 1945', clr:'tb', tags:['Guerre Froide','Décolonisation','ONU','Construction européenne','Chute du mur de Berlin']}
+    ],
+    flashcards:[
+      {q:'Début de la 1ère Guerre mondiale ?', a:'28 juillet 1914\nCause : assassinat de l\'archiduc François-Ferdinand à Sarajevo', em:'🔫'},
+      {q:'Appel du 18 juin 1940 ?', a:'De Gaulle appelle les Français à résister depuis Londres', em:'✊'},
+      {q:'Guerre Froide ?', a:'Tension USA vs URSS (1947-1991)\nSans combat direct, course aux armements', em:'❄️'},
+      {q:'Chute du Mur de Berlin ?', a:'9 novembre 1989\nFin de la Guerre Froide', em:'🧱'}
+    ]
+  },
+  svt: {
+    name:'SVT', icon:'🧬', bg:'#EAF3DE', col:'#173404', brd:'#97C459',
+    synop:[
+      {title:'🧬 Génétique', clr:'tg', tags:['ADN & chromosomes','Gènes & allèles','Mutations','OGM','Empreinte génétique']},
+      {title:'🫀 Corps humain', clr:'tc', tags:['Système nerveux','Immunité','Reproduction','Digestion','Nutrition']},
+      {title:'🌱 Écosystèmes', clr:'tt', tags:['Chaînes alimentaires','Biodiversité','Photosynthèse','Évolution','Réchauffement']}
+    ],
+    flashcards:[
+      {q:'Qu\'est-ce que l\'ADN ?', a:'Molécule portant l\'info génétique.\nDouble hélice dans le noyau de chaque cellule.', em:'🧬'},
+      {q:'Photosynthèse ?', a:'CO₂ + eau + lumière → glucose + O₂\nPermet aux plantes de produire leur énergie.', em:'🌿'},
+      {q:'Combien de chromosomes chez l\'humain ?', a:'46 chromosomes (23 paires)\nLes gamètes n\'en ont que 23.', em:'🔬'}
+    ]
+  },
+  phys: {
+    name:'Physique-Chimie', icon:'⚗️', bg:'#E6F1FB', col:'#042C53', brd:'#85B7EB',
+    synop:[
+      {title:'⚡ Électricité', clr:'tb', tags:['Circuit en série','Circuit en dérivation','Loi d\'Ohm','Puissance électrique','Énergie électrique']},
+      {title:'⚗️ Chimie', clr:'tt', tags:['Atomes & molécules','Réactions chimiques','pH & acides','Tableau périodique','Conservation de la masse']},
+      {title:'🔭 Physique', clr:'tp', tags:['Forces & mouvement','Lumière & optique','Son & ondes','Radioactivité','Gravitation']}
+    ],
+    flashcards:[
+      {q:'Loi d\'Ohm ?', a:'U = R × I\nU en Volts, R en Ohms, I en Ampères', em:'⚡'},
+      {q:'Qu\'est-ce qu\'un atome ?', a:'Plus petite unité de matière.\nNoyau (protons + neutrons) + électrons autour.', em:'⚛️'},
+      {q:'Série vs dérivation ?', a:'Série : même intensité partout.\nDérivation : même tension partout.', em:'🔌'}
+    ]
+  },
+  geo: {
+    name:'Géographie', icon:'🌍', bg:'#FAECE7', col:'#4A1B0C', brd:'#F0997B',
+    synop:[
+      {title:'🌐 Mondialisation', clr:'tc', tags:['Échanges mondiaux','FMN','Pays émergents','Inégalités Nord/Sud','Flux migratoires']},
+      {title:'🏙️ Urbanisation', clr:'ta', tags:['Mégapoles','Métropoles mondiales','Bidonvilles','Étalement urbain','Smart city']},
+      {title:'🌱 Développement durable', clr:'tg', tags:['Ressources naturelles','Transition énergétique','COP','Réchauffement climatique','Agroécologie']}
+    ],
+    flashcards:[
+      {q:'Mondialisation ?', a:'Intégration économique, culturelle, politique mondiale.\nFavorisée par transports, internet, commerce.', em:'🌐'},
+      {q:'Définition : mégapole ?', a:'Ville de plus de 10 millions d\'habitants.\nEx : Tokyo (37M), Delhi (31M)', em:'🏙️'},
+      {q:'FMN ?', a:'Firme MultiNationale : entreprise présente dans plusieurs pays.\nEx : Apple, Total, Samsung', em:'🏢'}
+    ]
+  }
+};
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+function addXP(n, msg) {
+  xp += n;
+  document.getElementById('xv').textContent = xp;
+  document.getElementById('xp-r').textContent = xp;
+  toast(msg || `+${n} XP !`);
+}
+
+function goHome() {
+  document.getElementById('s-matiere').classList.remove('on');
+  document.getElementById('s-home').classList.add('on');
+  ['n-home','n-prog'].forEach(x => document.getElementById(x).classList.remove('on'));
+  document.getElementById('n-home').classList.add('on');
+}
+function switchNav(tab) {
+  ['s-home','s-matiere','s-prog'].forEach(x => document.getElementById(x).classList.remove('on'));
+  ['n-home','n-prog'].forEach(x => document.getElementById(x).classList.remove('on'));
+  if (tab === 'home') { document.getElementById('s-home').classList.add('on'); document.getElementById('n-home').classList.add('on'); }
+  else if (tab === 'prog') { document.getElementById('s-prog').classList.add('on'); document.getElementById('n-prog').classList.add('on'); }
+}
+function launchAI() { openM(curM || 'hist'); setTimeout(() => setMode('quiz'), 50); }
+
+function openM(k) {
+  curM = k; curMode = 'synop'; fcIdx = 0; fcFlipped = false; aiQuiz = null; aiTopic = '';
+  const d = DATA[k];
+  const mhdr = document.getElementById('mhdr');
+  mhdr.innerHTML = `<h2>${d.icon} ${d.name}</h2><p>Choisis ton mode</p>`;
+  mhdr.style.cssText = `background:${d.bg};color:${d.col};border:0.5px solid ${d.brd};border-radius:16px;padding:16px;margin-bottom:14px`;
+  ['synop','flash','quiz'].forEach(x => document.getElementById('mb-'+x).classList.remove('on'));
+  document.getElementById('mb-synop').classList.add('on');
+  renderMode('synop');
+  ['s-home','s-prog'].forEach(x => document.getElementById(x).classList.remove('on'));
+  document.getElementById('s-matiere').classList.add('on');
+  ['n-home','n-prog'].forEach(x => document.getElementById(x).classList.remove('on'));
+}
+function setMode(m) {
+  ['synop','flash','quiz'].forEach(x => document.getElementById('mb-'+x).classList.remove('on'));
+  document.getElementById('mb-'+m).classList.add('on');
+  curMode = m; fcIdx = 0; fcFlipped = false; aiQuiz = null; aiTopic = '';
+  renderMode(m);
+}
+function renderMode(m) {
+  const d = DATA[curM], c = document.getElementById('mcontent');
+  if (m === 'synop') {
+    let h = '';
+    d.synop.forEach(s => {
+      h += `<div class="synop-sec"><h3>${s.title}</h3><div class="tags">`;
+      s.tags.forEach(t => { h += `<span class="tag ${s.clr}" onclick="showInfo('${t.replace(/'/g,"&#39;")}')">${t}</span>`; });
+      h += '</div></div>';
+    });
+    c.innerHTML = h;
+  } else if (m === 'flash') {
+    renderFlash(c);
+  } else if (m === 'quiz') {
+    renderAIPanel(c);
+  }
+}
+
+function showInfo(tag) {
+  const d = DATA[curM];
+  const c = document.getElementById('mcontent');
+  c.innerHTML = `
+    <div style="background:var(--bg);border-radius:var(--radius-lg);padding:16px;border:0.5px solid var(--border);margin-bottom:12px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Notion cliquée</div>
+      <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:14px">${tag}</div>
+      <div id="info-content"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+    </div>
+    <button onclick="setMode('synop')" style="width:100%;padding:12px;border-radius:var(--radius);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">← Retour à la carte</button>`;
+  fetchInfo(tag, d.name);
+}
+
+async function fetchInfo(tag, subject) {
+  try {
+    const r = await fetch(PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic: tag,
+        subject: subject,
+        mode: 'explain'
+      })
+    });
+    const data = await r.json();
+    const el = document.getElementById('info-content');
+    if (el) {
+      if (data.explanation) {
+        el.innerHTML = `<p style="font-size:15px;line-height:1.6;color:var(--text)">${data.explanation}</p>`;
+      } else {
+        el.innerHTML = `<p style="font-size:14px;color:var(--text2)">Génère un quiz sur ce sujet pour en apprendre plus !</p>`;
+      }
+    }
+  } catch(e) {
+    const el = document.getElementById('info-content');
+    if (el) el.innerHTML = `<p style="font-size:14px;color:var(--text2)">Appuie sur Quiz IA pour t'entraîner sur ce sujet !</p>`;
+  }
+}
+
+function renderFlash(c) {
+  const d = DATA[curM], cards = d.flashcards, cd = cards[fcIdx];
+  c.innerHTML = `
+    <div class="fc-wrap"><div class="fc" id="fc" onclick="flipCard()">
+      <div class="face ffront"><div class="fem">${cd.em}</div><div class="fq">${cd.q}</div><div class="fh">👆 Appuie pour voir la réponse</div></div>
+      <div class="face fback"><div class="fem">${cd.em}</div><div class="fa">${cd.a}</div><div class="fh">✅ Mémorisé !</div></div>
+    </div></div>
+    <div class="cnav">
+      <button class="nbtn" onclick="prevFc()">← Préc.</button>
+      <div class="ctr">${fcIdx+1} / ${cards.length}</div>
+      <button class="nbtn" onclick="nextFc()">Suiv. →</button>
+    </div>`;
+}
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('fc').classList.toggle('flip');
+  if (fcFlipped) { fcDone++; document.getElementById('fc-r').textContent = fcDone; addXP(5, '⚡ +5 XP — Flashcard vue !'); }
+}
+function nextFc() { fcIdx = (fcIdx+1) % DATA[curM].flashcards.length; fcFlipped = false; renderFlash(document.getElementById('mcontent')); }
+function prevFc() { fcIdx = (fcIdx-1+DATA[curM].flashcards.length) % DATA[curM].flashcards.length; fcFlipped = false; renderFlash(document.getElementById('mcontent')); }
+
+function renderAIPanel(c) {
+  const d = DATA[curM];
+  let allTags = [];
+  d.synop.forEach(s => s.tags.forEach(t => allTags.push(t)));
+  const topics = allTags.slice(0, 9);
+  const chips = topics.map(t => `<span class="topic-chip" onclick="selTopic(this,'${t.replace(/'/g,"&#39;")}')">${t}</span>`).join('');
+  c.innerHTML = `
+    <div class="ai-box">
+      <div class="ai-title">🤖 Quiz IA — généré pour toi</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Choisis un sujet :</div>
+      <div class="topic-row" id="topic-row">${chips}</div>
+      <button class="gen-btn" id="gen-btn" onclick="generateQuiz()" disabled>Génère mon quiz ✨</button>
+    </div>
+    <div id="quiz-output"></div>`;
+  aiTopic = ''; aiMatiere = d.name;
+}
+
+function selTopic(el, t) {
+  document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  aiTopic = t;
+  document.getElementById('gen-btn').disabled = false;
+}
+
+async function generateQuiz() {
+  const btn = document.getElementById('gen-btn');
+  const out = document.getElementById('quiz-output');
+  btn.disabled = true;
+  out.innerHTML = `<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  try {
+    const r = await fetch(PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: aiTopic, subject: aiMatiere })
+    });
+    if (!r.ok) throw new Error(`Erreur serveur (${r.status})`);
+    const q = await r.json();
+    if (q.error) throw new Error(q.error);
+    aiQuiz = q;
+    renderAIQuiz(q);
+    btn.disabled = false;
+  } catch(e) {
+    out.innerHTML = `<div class="err-box">❌ Impossible de générer le quiz. Vérifie ta connexion et réessaie.<br><small style="opacity:.7;display:block;margin-top:4px">${e.message||''}</small></div>`;
+    btn.disabled = false;
+  }
+}
+
+function renderAIQuiz(q) {
+  const out = document.getElementById('quiz-output');
+  const opts = q.options.map((o,i) => `<button class="qopt" id="ao-${i}" onclick="answerAI(${i})">${o}</button>`).join('');
+  out.innerHTML = `
+    <div class="quiz-area">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Question générée par l'IA ✨</div>
+      <div class="qq">${q.question}</div>
+      <div class="qopts">${opts}</div>
+      <div id="ai-fb"></div>
+    </div>`;
+}
+
+function answerAI(i) {
+  const q = aiQuiz;
+  document.querySelectorAll('.qopt').forEach(b => b.style.pointerEvents = 'none');
+  const fb = document.getElementById('ai-fb');
+  if (i === q.answer) {
+    document.getElementById('ao-'+i).classList.add('ok');
+    fb.className = 'qfb qok';
+    fb.innerHTML = `✅ ${q.explanation}`;
+    qaDone++; document.getElementById('qa-r').textContent = qaDone;
+    addXP(25, '🎯 +25 XP — Bonne réponse !');
+  } else {
+    document.getElementById('ao-'+i).classList.add('ko');
+    document.getElementById('ao-'+q.answer).classList.add('ok');
+    fb.className = 'qfb qko';
+    fb.innerHTML = `❌ ${q.explanation}`;
+    addXP(5, '💪 +5 XP — Continue !');
+  }
+  fb.innerHTML += `<button class="qnext" onclick="generateQuiz()">Nouvelle question →</button>`;
+}
+</script>
+</body>
+</html>
